@@ -1,24 +1,21 @@
 module.exports = function check(str, bracketsConfig) {
   const stack = [];
+  const openBr = bracketsConfig.map(pair => pair[0]);
+  const closeBr = bracketsConfig.map(pair => pair[1]);
 
   for (let i = 0; i < str.length; i++) {
-    const char = str[i];
+    const el = str[i];
 
-    if (bracketsConfig.includes(char)) {
-      stack.push(char);
-    } else {
-      if (stack.length === 0) {
+    if (openBr.includes(el)) {
+      stack.push(el);
+    } else if (closeBr.includes(el)) {
+      const lastOpenedBr = stack.pop();
+      const expectedClosedBr = bracketsConfig.find(pair => pair[0] === lastOpenedBr)[1];
+
+      if (el !== expectedClosedBr) {
         return false;
       }
-
-      let directKey = stack.at(-1)
-
-      if (bracketsConfig[char] === directKey) {
-        stack.pop()
-      } else {
-        return false
-      }
     }
-  } return stack.length === 0;
-}
-
+  }
+  return stack.length === 0;
+};
